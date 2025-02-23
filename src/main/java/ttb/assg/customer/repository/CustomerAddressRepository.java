@@ -7,4 +7,5 @@ import java.util.List;
 
 public interface CustomerAddressRepository extends JpaRepository<CustomerAddress, Integer> {
 
+    CustomerAddress findByAddressSeqAndCustomerInfo_CustomerNo(Integer addressSeq, String customerNo);
 }

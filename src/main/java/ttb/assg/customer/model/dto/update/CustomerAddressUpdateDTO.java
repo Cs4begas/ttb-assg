@@ -1,22 +1,22 @@
-package ttb.assg.customer.model.dto;
+package ttb.assg.customer.model.dto.update;
 
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ttb.assg.customer.constant.AddressType;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @NoArgsConstructor
-public class CustomerAddressDTO {
-
+public class CustomerAddressUpdateDTO {
+    @NotNull
+    @Min(value = 1)
     private Integer addressSeq;
-    private String customerNo;
     @Enumerated(EnumType.STRING)
     private AddressType addressType;
     @NotBlank
@@ -35,8 +35,4 @@ public class CustomerAddressDTO {
     private String provinceCode;
     @NotBlank
     private String postalCode;
-    private String updateBy;
-    private LocalDateTime updateDate;
-    private LocalDateTime createDate;
-    private String createBy;
 }

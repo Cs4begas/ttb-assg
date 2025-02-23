@@ -1,28 +1,23 @@
-package ttb.assg.customer.model.dto;
+package ttb.assg.customer.model.dto.update;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.validation.constraints.Min;
+import jakarta.validation.constraints.NotNull;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ttb.assg.customer.constant.PhoneType;
 
-import java.time.LocalDateTime;
-
 @Getter
 @Setter
 @NoArgsConstructor
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class CustomerPhoneDTO {
-
+public class CustomerPhoneUpdateDTO {
+    @NotNull
+    @Min(1)
     private Integer phoneSeq;
     private String customerNo;
     @Enumerated(EnumType.STRING)
     private PhoneType phoneType;
     private String phoneNo;
-    private String updateBy;
-    private LocalDateTime updateDate;
-    private LocalDateTime createDate;
-    private String createBy;
 }

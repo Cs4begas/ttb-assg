@@ -1,4 +1,4 @@
-package ttb.assg.customer.model.dto;
+package ttb.assg.customer.model.dto.update;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
@@ -13,17 +13,18 @@ import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.Accessors;
 import ttb.assg.customer.constant.IdType;
+import ttb.assg.customer.model.dto.CustomerAddressDTO;
+import ttb.assg.customer.model.dto.CustomerPhoneDTO;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Getter
 @Setter
 @JsonInclude(JsonInclude.Include.NON_NULL)
 @Accessors(chain = true)
-public class CustomerDTO {
+public class CustomerUpdateDTO {
     private String customerNo;
     @Enumerated(EnumType.STRING)
     @NotNull
@@ -53,16 +54,9 @@ public class CustomerDTO {
     @Digits(integer = 10, fraction = 2)
     private BigDecimal salary;
 
-    private String updateBy;
-    private LocalDateTime updateDate;
-    private LocalDateTime createDate;
-    private String createBy;
+    @Valid
+    private List<CustomerAddressUpdateDTO> addresses;
 
     @Valid
-    @NotNull
-    private List<CustomerAddressDTO> addresses;
-
-    @Valid
-    @NotNull
-    private List<CustomerPhoneDTO> phones;
+    private List<CustomerPhoneUpdateDTO> phones;
 }

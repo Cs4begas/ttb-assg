@@ -18,7 +18,7 @@ public class CustomerPhone implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "phone_seq")
-    private Long phoneSeq;
+    private Integer phoneSeq;
 
     @Column(name = "phone_type")
     private String phoneType;

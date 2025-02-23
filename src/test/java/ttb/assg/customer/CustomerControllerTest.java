@@ -16,10 +16,13 @@ import ttb.assg.common.NotFoundException;
 import ttb.assg.customer.constant.CustomerConstants;
 import ttb.assg.customer.constant.IdType;
 import ttb.assg.customer.model.dto.CustomerDTO;
+import ttb.assg.customer.model.entity.CustomerInfo;
 import ttb.assg.utils.JsonFileReader;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
@@ -303,4 +306,32 @@ public class CustomerControllerTest {
                         .contentType(CustomerConstants.APPLICATION_JSON_UTF8_VALUE))
                 .andExpect(status().isNotFound());
     }
+
+
+    @Test
+    public void givenCustomerExists_whenGetCustomerByCustomerNo_thenReturnOk() throws Exception {
+        // Given
+        String customerNo = "C00001";
+        CustomerDTO customerDTO = new CustomerDTO().setCustomerNo(customerNo);
+        when(customerService.getCustomerByCustomerNo(customerNo)).thenReturn(customerDTO);
+
+        // When and Then
+        mockMvc.perform(get("/api/v1/customers/"+ customerNo)
+                        .contentType(CustomerConstants.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.customerNo").value(customerDTO.getCustomerNo()));
+    }
+
+    @Test
+    public void givenCustomerDoesNotExist_whenGetCustomerByCustomerNo_thenReturnNotFound() throws Exception {
+        // Given
+        String customerNo = "C00002";
+        when(customerService.getCustomerByCustomerNo(anyString())).thenThrow(new NotFoundException("Customer not found"));
+
+
+        mockMvc.perform(get("/api/v1/customers/"+ customerNo)
+                        .contentType(CustomerConstants.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(status().isNotFound());
+    }
+
 }

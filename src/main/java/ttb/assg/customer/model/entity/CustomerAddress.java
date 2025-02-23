@@ -19,7 +19,7 @@ public class CustomerAddress implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "address_seq")
-    private Long addressSeq;
+    private Integer addressSeq;
 
     @Column(name = "address_type")
     private String addressType;

@@ -2,6 +2,7 @@ package ttb.assg.customer;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -9,6 +10,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import ttb.assg.common.NotFoundException;
 import ttb.assg.customer.model.dto.CustomerDTO;
+import ttb.assg.customer.model.dto.update.CustomerAddressUpdateDTO;
+import ttb.assg.customer.model.dto.update.CustomerPhoneUpdateDTO;
+import ttb.assg.customer.model.dto.update.CustomerUpdateDTO;
 import ttb.assg.customer.model.entity.CustomerAddress;
 import ttb.assg.customer.model.entity.CustomerInfo;
 import ttb.assg.customer.model.entity.CustomerPhone;
@@ -160,6 +164,123 @@ public class CustomerServiceTest {
 
         // When and Then
         assertThrows(NotFoundException.class, () -> customerService.getCustomers());
+    }
+
+    @Test
+    public void givenCustomerExists_whenGetCustomerByCustomerNo_thenReturnCustomerDTO() {
+        String customerNo = "C00001";
+        CustomerInfo customerInfo = new CustomerInfo(
+                customerNo, "CI", "1234567890123", "Mr.", "John", "Doe", "Mr.", "John", "Doe",
+                LocalDate.of(1990, 1, 1), "123", "Acme Corp", new BigDecimal("50000.0"), "test", LocalDateTime.now(), "test", LocalDateTime.now());
+        when(customerInfoRepository.findByCustomerNo(customerNo)).thenReturn(customerInfo);
+
+        CustomerDTO result = customerService.getCustomerByCustomerNo(customerNo);
+
+        assertEquals(customerNo, result.getCustomerNo());
+
+    }
+
+    @Test
+    public void givenCustomerDoesNotExist_whenGetCustomerByCustomerNo_thenThrowNotFoundException() {
+        String customerNo = "C00002";
+
+        when(customerInfoRepository.findByCustomerNo(customerNo)).thenReturn(null);
+
+        assertThrows(NotFoundException.class, () -> customerService.getCustomerByCustomerNo(customerNo));
+    }
+
+
+    @Test
+    public void givenExistingCustomer_whenUpdateCustomer_thenCustomerUpdated() {
+        String customerNo = "C00001";
+        String staffId = "staff123";
+        CustomerInfo existingCustomer = new CustomerInfo(
+                customerNo, "CI", "1234567890123", "Mr.", "John", "Doe", "Mr.", "John", "Doe",
+                LocalDate.of(1990, 1, 1), "123", "Acme Corp", new BigDecimal("50000.0"), "test", LocalDateTime.now(), "test", LocalDateTime.now()
+        );
+        CustomerUpdateDTO updateDTO = getCustomerUpdateDTO();
+
+        ArgumentCaptor<List<CustomerAddress>> addressCaptor = ArgumentCaptor.forClass(List.class);
+        ArgumentCaptor<List<CustomerPhone>> phoneCaptor = ArgumentCaptor.forClass(List.class);
+
+        when(customerInfoRepository.findByCustomerNo(customerNo)).thenReturn(existingCustomer);
+        when(customerAddressRepository.findByAddressSeqAndCustomerInfo_CustomerNo(1, customerNo)).thenReturn(new CustomerAddress());
+        when(customerPhoneRepository.findByPhoneSeqAndCustomerInfo_CustomerNo(1, customerNo)).thenReturn(new CustomerPhone());
+        when(customerInfoRepository.save(any(CustomerInfo.class))).thenAnswer(invocation -> invocation.getArgument(0));
+
+        CustomerDTO updatedCustomer = customerService.updateCustomer(customerNo, updateDTO, staffId);
+
+        verify(customerAddressRepository).saveAll(addressCaptor.capture());
+        verify(customerPhoneRepository).saveAll(phoneCaptor.capture());
+
+        List<CustomerAddress> capturedAddresses = addressCaptor.getValue();
+        List<CustomerPhone> capturedPhones = phoneCaptor.getValue();
+
+        assertEquals("9999999999999", updatedCustomer.getIdNo());
+        assertEquals(1, capturedAddresses.size());
+        assertEquals("11111", capturedAddresses.get(0).getPostalCode());
+
+        assertEquals(1, capturedPhones.size());
+        assertEquals("0909090909", capturedPhones.get(0).getPhoneNo());
+    }
+
+    private static CustomerUpdateDTO getCustomerUpdateDTO() {
+        CustomerUpdateDTO updateDTO = new CustomerUpdateDTO();
+        updateDTO.setIdNo("9999999999999");
+
+        CustomerAddressUpdateDTO addressUpdateDTO = new CustomerAddressUpdateDTO();
+        addressUpdateDTO.setAddressSeq(1);
+        addressUpdateDTO.setPostalCode("11111"); // Update postalCode
+        updateDTO.setAddresses(List.of(addressUpdateDTO));
+
+        CustomerPhoneUpdateDTO phoneUpdateDTO = new CustomerPhoneUpdateDTO();
+        phoneUpdateDTO.setPhoneSeq(1);
+        phoneUpdateDTO.setPhoneNo("0909090909"); // Update phoneNo
+        updateDTO.setPhones(List.of(phoneUpdateDTO));
+        return updateDTO;
+    }
+
+    @Test
+    public void givenNonExistingCustomer_whenUpdateCustomer_thenThrowNotFoundException() {
+        String customerNo = "C00002";
+        CustomerUpdateDTO updateDTO = new CustomerUpdateDTO();
+        when(customerInfoRepository.findByCustomerNo(customerNo)).thenReturn(null);
+
+        assertThrows(NotFoundException.class, () -> customerService.updateCustomer(customerNo, updateDTO, "staff123"));
+    }
+
+    @Test
+    public void givenNonExistingAddress_whenUpdateCustomer_thenThrowNotFoundException() {
+        String customerNo = "C00001";
+        CustomerUpdateDTO updateDTO = new CustomerUpdateDTO();
+        CustomerAddressUpdateDTO addressUpdateDTO = new CustomerAddressUpdateDTO();
+        addressUpdateDTO.setAddressSeq(999); // Non-existing address
+        updateDTO.setAddresses(List.of(addressUpdateDTO));
+        CustomerInfo existingCustomer = new CustomerInfo(
+                customerNo, "CI", "1234567890123", "Mr.", "John", "Doe", "Mr.", "John", "Doe",
+                LocalDate.of(1990, 1, 1), "123", "Acme Corp", new BigDecimal("50000.0"), "test", LocalDateTime.now(), "test", LocalDateTime.now()
+        );
+        when(customerInfoRepository.findByCustomerNo(customerNo)).thenReturn(existingCustomer);
+        when(customerAddressRepository.findByAddressSeqAndCustomerInfo_CustomerNo(999, customerNo)).thenReturn(null);
+
+        assertThrows(NotFoundException.class, () -> customerService.updateCustomer(customerNo, updateDTO, "staff123"));
+    }
+
+    @Test
+    public void givenNonExistingPhone_whenUpdateCustomer_thenThrowNotFoundException() {
+        String customerNo = "C00001";
+        CustomerUpdateDTO updateDTO = new CustomerUpdateDTO();
+        CustomerPhoneUpdateDTO phoneUpdateDTO = new CustomerPhoneUpdateDTO();
+        phoneUpdateDTO.setPhoneSeq(999); // Non-existing phone
+        updateDTO.setPhones(List.of(phoneUpdateDTO));
+        CustomerInfo existingCustomer = new CustomerInfo(
+                customerNo, "CI", "1234567890123", "Mr.", "John", "Doe", "Mr.", "John", "Doe",
+                LocalDate.of(1990, 1, 1), "123", "Acme Corp", new BigDecimal("50000.0"), "test", LocalDateTime.now(), "test", LocalDateTime.now()
+        );
+        when(customerInfoRepository.findByCustomerNo(customerNo)).thenReturn(existingCustomer);
+        when(customerPhoneRepository.findByPhoneSeqAndCustomerInfo_CustomerNo(999, customerNo)).thenReturn(null);
+
+        assertThrows(NotFoundException.class, () -> customerService.updateCustomer(customerNo, updateDTO, "staff123"));
     }
 }
 
