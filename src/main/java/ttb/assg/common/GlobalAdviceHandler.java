@@ -1,5 +1,6 @@
 package ttb.assg.common;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.NonNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,9 +34,32 @@ public class GlobalAdviceHandler extends ResponseEntityExceptionHandler {
         return ResponseEntity.badRequest().body(detail);
     }
 
+    @ExceptionHandler(NotFoundException.class)
+    protected ResponseEntity<Object> notFoundExceptionHandler(NotFoundException e) {
+        ProblemDetail detail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.NOT_FOUND,
+                e.getMessage());
+       logger.error("NotFoundException: {}", detail);
+        return ResponseEntity.notFound().build();
+    }
+
+    @ExceptionHandler(ValidationException.class)
+    protected ResponseEntity<Object> validationExceptionHandler(EntityNotFoundException e) {
+        ProblemDetail detail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.NOT_FOUND,
+                e.getMessage());
+       logger.error("Validation error: {}", detail);
+        return ResponseEntity.badRequest().body(detail);
+    }
+
+
     @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorResponse> handleException(Exception ex) {
-        ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
-        return new ResponseEntity<>(errorResponse, HttpStatus.INTERNAL_SERVER_ERROR);
+    protected ResponseEntity<Object> globalExceptionHandling(Exception e) {
+        ProblemDetail detail = ProblemDetail.forStatusAndDetail(
+                HttpStatus.INTERNAL_SERVER_ERROR,
+                e.getMessage());
+        logger.error(e.getMessage());
+        return ResponseEntity.internalServerError()
+                .body(detail);
     }
 }

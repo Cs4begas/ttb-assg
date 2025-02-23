@@ -1,4 +1,4 @@
-package ttb.assg;
+package ttb.assg.customer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.BeforeEach;
@@ -12,18 +12,20 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
-import ttb.assg.customer.CustomerController;
-import ttb.assg.customer.CustomerService;
+import ttb.assg.common.NotFoundException;
 import ttb.assg.customer.constant.CustomerConstants;
 import ttb.assg.customer.constant.IdType;
 import ttb.assg.customer.model.dto.CustomerDTO;
+import ttb.assg.utils.JsonFileReader;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.when;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
@@ -51,7 +53,6 @@ public class CustomerControllerTest {
 
     private HttpHeaders headers = new HttpHeaders();
     private static String MOCK_STAFF = "95016";
-
 
 
     @BeforeEach
@@ -276,5 +277,30 @@ public class CustomerControllerTest {
 
     private CustomerDTO createCustomerSuccessDTO() throws IOException {
         return jsonFileReader.readJsonFileToObject("create_customer_success.json", CustomerDTO.class);
+    }
+
+
+    @Test
+    public void givenCustomersExist_whenGetCustomers_thenReturnOk() throws Exception {
+        List<CustomerDTO> customerDTOs = List.of(
+                new CustomerDTO(),
+                new CustomerDTO()
+        );
+        when(customerService.getCustomers()).thenReturn(customerDTOs);
+
+        // When and Then
+        mockMvc.perform(get("/api/v1/customers")
+                        .contentType(CustomerConstants.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.length()").value(customerDTOs.size()));
+    }
+
+    @Test
+    public void givenNoCustomers_whenGetCustomers_thenReturnNotFound() throws Exception {
+        when(customerService.getCustomers()).thenThrow(new NotFoundException("No customers found"));
+
+        mockMvc.perform(get("/api/v1/customers")
+                        .contentType(CustomerConstants.APPLICATION_JSON_UTF8_VALUE))
+                .andExpect(status().isNotFound());
     }
 }

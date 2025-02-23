@@ -7,7 +7,7 @@ import org.mapstruct.factory.Mappers;
 import ttb.assg.customer.model.dto.CustomerPhoneDTO;
 import ttb.assg.customer.model.entity.CustomerPhone;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper
 public interface CustomerPhoneMapper {
     CustomerPhoneMapper INSTANCE = Mappers.getMapper(CustomerPhoneMapper.class);
 

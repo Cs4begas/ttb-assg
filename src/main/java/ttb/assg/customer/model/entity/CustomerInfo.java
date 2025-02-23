@@ -1,23 +1,20 @@
 package ttb.assg.customer.model.entity;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name = "customer_info")
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@ToString
 public class CustomerInfo implements Serializable {
 
     @Id
@@ -58,7 +55,7 @@ public class CustomerInfo implements Serializable {
     private String workingPlace;
 
     @Column(name = "salary")
-    private Double salary;
+    private BigDecimal salary;
 
     @Column(name = "create_by")
     private String createBy;
@@ -72,5 +69,34 @@ public class CustomerInfo implements Serializable {
     @UpdateTimestamp
     @Column(name = "update_date", insertable = false)
     private LocalDateTime updateDate;
+
+    @OneToMany(mappedBy = "customerInfo")
+    private List<CustomerAddress> customerAddresses;
+
+    @OneToMany(mappedBy = "customerInfo")
+    private List<CustomerPhone> customerPhones;
+
+    public CustomerInfo(String customerNo, String idType, String idNo, String titleNameTh, String firstNameTh, String lastNameTh,
+                        String titleNameEn, String firstNameEn, String lastNameEn, LocalDate birthDate, String occupationCode,
+                        String workingPlace, BigDecimal salary, String createBy, LocalDateTime createDate, String updateBy,
+                        LocalDateTime updateDate) {
+        this.customerNo = customerNo;
+        this.idType = idType;
+        this.idNo = idNo;
+        this.titleNameTh = titleNameTh;
+        this.firstNameTh = firstNameTh;
+        this.lastNameTh = lastNameTh;
+        this.titleNameEn = titleNameEn;
+        this.firstNameEn = firstNameEn;
+        this.lastNameEn = lastNameEn;
+        this.birthDate = birthDate;
+        this.occupationCode = occupationCode;
+        this.workingPlace = workingPlace;
+        this.salary = salary;
+        this.createBy = createBy;
+        this.createDate = createDate;
+        this.updateBy = updateBy;
+        this.updateDate = updateDate;
+    }
 
 }

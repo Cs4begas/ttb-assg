@@ -1,4 +1,4 @@
-package ttb.assg;
+package ttb.assg.customer;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -7,7 +7,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import ttb.assg.customer.CustomerService;
+import ttb.assg.common.NotFoundException;
 import ttb.assg.customer.model.dto.CustomerDTO;
 import ttb.assg.customer.model.entity.CustomerAddress;
 import ttb.assg.customer.model.entity.CustomerInfo;
@@ -18,8 +18,13 @@ import ttb.assg.customer.model.mapper.CustomerPhoneMapper;
 import ttb.assg.customer.repository.CustomerAddressRepository;
 import ttb.assg.customer.repository.CustomerInfoRepository;
 import ttb.assg.customer.repository.CustomerPhoneRepository;
+import ttb.assg.utils.JsonFileReader;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -124,4 +129,37 @@ public class CustomerServiceTest {
     private CustomerDTO createCustomerSuccessDTO() throws IOException {
         return  jsonFileReader.readJsonFileToObject("create_customer_success.json", CustomerDTO.class);
     }
+
+
+    @Test
+    public void givenCustomersExist_whenGetCustomers_thenReturnCustomerDTOs() {
+        // Given
+        List<CustomerInfo> customerInfos = List.of(
+                new CustomerInfo("C00001", "CI", "1234567890123", "Mr.", "John", "Doe", "Mr.", "John", "Doe",
+                        LocalDate.of(1990, 1, 1), "123", "Acme Corp", new BigDecimal("50000.0"), "test", LocalDateTime.now(), "test", LocalDateTime.now()),
+                new CustomerInfo("C00002", "PP", "AB1234567", "Ms.", "Jane", "Smith", "Ms.", "Jane", "Smith",
+                        LocalDate.of(1985, 5, 10), "456", "Beta Inc", new BigDecimal("50000.0"), "test", LocalDateTime.now(), "test", LocalDateTime.now())
+        );
+        when(customerInfoRepository.findAll()).thenReturn(customerInfos);
+
+        // When
+        List<CustomerDTO> result = customerService.getCustomers();
+
+        // Then
+        assertEquals(2, result.size());
+        assertEquals(customerInfos.get(0).getCustomerNo(), result.get(0).getCustomerNo());
+        assertEquals(customerInfos.get(1).getCustomerNo(), result.get(1).getCustomerNo());
+        // Add more assertions as needed
+
+    }
+
+    @Test
+    public void givenNoCustomers_whenGetCustomers_thenThrowNotFoundException() {
+        // Given
+        when(customerInfoRepository.findAll()).thenReturn(Collections.emptyList());
+
+        // When and Then
+        assertThrows(NotFoundException.class, () -> customerService.getCustomers());
+    }
 }
+

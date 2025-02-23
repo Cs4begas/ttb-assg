@@ -8,6 +8,8 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import ttb.assg.customer.constant.AddressType;
 
+import java.time.LocalDateTime;
+
 @Getter
 @Setter
 @NoArgsConstructor
@@ -32,4 +34,8 @@ public class CustomerAddressDTO {
     private String provinceCode;
     @NotBlank
     private String postalCode;
+    private String updateBy;
+    private LocalDateTime updateDate;
+    private LocalDateTime createDate;
+    private String createBy;
 }

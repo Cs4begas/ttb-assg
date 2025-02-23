@@ -2,12 +2,11 @@ package ttb.assg.customer.model.mapper;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.ReportingPolicy;
 import org.mapstruct.factory.Mappers;
 import ttb.assg.customer.model.dto.CustomerDTO;
 import ttb.assg.customer.model.entity.CustomerInfo;
 
-@Mapper(unmappedTargetPolicy = ReportingPolicy.IGNORE)
+@Mapper(uses = {CustomerAddressMapper.class, CustomerPhoneMapper.class})
 public interface CustomerInfoMapper {
     CustomerInfoMapper INSTANCE = Mappers.getMapper(CustomerInfoMapper.class);
 
@@ -18,5 +17,7 @@ public interface CustomerInfoMapper {
     @Mapping(target = "updateBy", expression = "java(staffId)")
     CustomerInfo toCustomerInfoForUpdate(CustomerDTO customerDTO, String staffId);
 
+    @Mapping(target = "addresses", source = "customerAddresses")
+    @Mapping(target = "phones", source = "customerPhones")
     CustomerDTO toCustomerDTO(CustomerInfo customerInfo);
 }

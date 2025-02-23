@@ -5,6 +5,8 @@ import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import ttb.assg.common.NotFoundException;
+import ttb.assg.common.ValidationException;
 import ttb.assg.customer.model.dto.CustomerDTO;
 import ttb.assg.customer.model.entity.CustomerAddress;
 import ttb.assg.customer.model.entity.CustomerInfo;
@@ -31,8 +33,8 @@ public class CustomerService {
     public CustomerDTO createCustomer(CustomerDTO customerDTO, String staffId) {
         CustomerInfo existingCustomerInfo = customerInfoRepository.findByCustomerNo(customerDTO.getCustomerNo());
         if (existingCustomerInfo != null) {
-            logger.error("Customer already exists");
-            throw new RuntimeException("Customer already exists");
+            logger.error("{} already exists", customerDTO.getCustomerNo());
+            throw new ValidationException("Customer already exists");
         }
         CustomerInfo customerInfo = CustomerInfoMapper.INSTANCE.toCustomerInfoForCreate(customerDTO, staffId);
         customerInfo.setCreateBy(staffId);
@@ -53,7 +55,7 @@ public class CustomerService {
         customerAddressRepository.saveAll(customerAddresses);
         customerPhoneRepository.saveAll(customerPhones);
 
-        CustomerDTO customerResponse =  CustomerInfoMapper.INSTANCE.toCustomerDTO(customerInfo);
+        CustomerDTO customerResponse = CustomerInfoMapper.INSTANCE.toCustomerDTO(customerInfo);
         customerResponse.setAddresses(customerAddresses.stream()
                 .map(CustomerAddressMapper.INSTANCE::toCustomerAddressDTO)
                 .toList());
@@ -65,6 +67,23 @@ public class CustomerService {
 
         return customerResponse;
     }
+
+    public List<CustomerDTO> getCustomers() {
+        List<CustomerInfo> customerInfos = customerInfoRepository.findAll();
+
+        if(customerInfos.isEmpty()){
+            throw new NotFoundException("No customers found");
+        }
+
+        List<CustomerDTO> customerDTOS = customerInfos.stream()
+                .map(CustomerInfoMapper.INSTANCE::toCustomerDTO)
+                .toList();
+
+
+        return customerDTOS;
+
+    }
+
 
 
 }
