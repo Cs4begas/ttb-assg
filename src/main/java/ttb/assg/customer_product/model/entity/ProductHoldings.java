@@ -1,7 +1,8 @@
-package ttb.assg.customer.model.entity;
+package ttb.assg.customer_product.model.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import ttb.assg.customer.model.entity.CustomerInfo;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -48,7 +49,6 @@ public class ProductHoldings implements Serializable {
     @Setter
     @NoArgsConstructor
     @AllArgsConstructor
-    @ToString
     public static class ProductHoldingsId implements Serializable {
         private String customerNo;
         private String productType;
