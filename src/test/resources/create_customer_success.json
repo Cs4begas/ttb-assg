@@ -1,0 +1,37 @@
+{
+  "customerNo": "C000001",
+  "idType": "CI",
+  "idNo": "1234567890123",
+  "titleNameTh": "นาย",
+  "firstNameTh": "สมชาย",
+  "lastNameTh": "ใจดี",
+  "titleNameEn": "Mr.",
+  "firstNameEn": "Somchai",
+  "lastNameEn": "Jaidee",
+  "birthDate": "10/05/1990",
+  "occupationCode": "1234",
+  "workingPlace": "ABC Company",
+  "salary": 10000.50,
+  "addresses": [
+    {
+      "addressType": "P",
+      "addressNo": "123/45",
+      "moo": "5",
+      "buildingVillage": "Happy Condo",
+      "floor": "8",
+      "roomNo": "A12",
+      "soi": "Sukhumvit 30",
+      "road": "Sukhumvit",
+      "subDistrict": "Khlong Toei",
+      "district": "Khlong Toei",
+      "provinceCode": "BKK",
+      "postalCode": "10110"
+    }
+  ],
+  "phones": [
+    {
+      "phoneType": "M",
+      "phoneNo": "0812345678"
+    }
+  ]
+}
