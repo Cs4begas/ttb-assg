@@ -14,6 +14,7 @@ public interface ProductHoldingsMapper {
     @Mapping(target = "id.productType", source = "productHoldingsDTO.productType")
     @Mapping(target = "id.accountNo", source = "productHoldingsDTO.accountNo")
     @Mapping(target = "createBy", expression = "java(staffId)")
+    @Mapping(target = "updateBy", expression = "java(staffId)")
     @Mapping(target = "customerInfo", ignore = true)
     ProductHoldings toProductHoldings(ProductHoldingsDTO productHoldingsDTO, String customerNo, String staffId);
 

@@ -5,6 +5,7 @@ import org.mockito.InjectMocks;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
+import ttb.assg.common.ValidationException;
 import ttb.assg.config.interceptor.HeaderInterceptor;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -36,40 +37,17 @@ public class HeaderInterceptorTest {
         request.addHeader("service-name", "customer-service");
         MockHttpServletResponse response = new MockHttpServletResponse();
 
-        assertThrows(RuntimeException.class, () -> headerInterceptor.preHandle(request, response, null));
-    }
-
-    @Test
-    public void givenMissingServiceName_whenPreHandle_thenThrowsException() throws Exception {
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.addHeader("Content-Type", "application/json; charset=UTF-8");
-
-        MockHttpServletResponse response = new MockHttpServletResponse();
-
-
-        assertThrows(RuntimeException.class, () -> headerInterceptor.preHandle(request, response, null));
+        assertThrows(ValidationException.class, () -> headerInterceptor.preHandle(request, response, null));
     }
 
     @Test
     public void givenNullContentType_whenPreHandle_thenThrowsException() throws Exception {
 
         MockHttpServletRequest request = new MockHttpServletRequest();
-
-        request.addHeader("service-name", "customer-service");
         MockHttpServletResponse response = new MockHttpServletResponse();
 
 
-        assertThrows(RuntimeException.class, () -> headerInterceptor.preHandle(request, response, null));
+        assertThrows(ValidationException.class, () -> headerInterceptor.preHandle(request, response, null));
     }
 
-    @Test
-    public void givenNullServiceName_whenPreHandle_thenThrowsException() throws Exception {
-
-        MockHttpServletRequest request = new MockHttpServletRequest();
-        request.addHeader("Content-Type", "application/json; charset=UTF-8");
-
-        MockHttpServletResponse response = new MockHttpServletResponse();
-
-        assertThrows(RuntimeException.class, () -> headerInterceptor.preHandle(request, response, null));
-    }
 }

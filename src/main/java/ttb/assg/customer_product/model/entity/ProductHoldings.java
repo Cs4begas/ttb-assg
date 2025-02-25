@@ -13,9 +13,17 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @NoArgsConstructor
-@AllArgsConstructor
-@ToString
 public class ProductHoldings implements Serializable {
+
+    public ProductHoldings(ProductHoldingsId productHoldingsId,String accountName, LocalDate accountOpenDate, String createBy, String updateBy, LocalDateTime createDate, LocalDateTime updateDate) {
+        this.id = productHoldingsId;
+        this.accountName = accountName;
+        this.accountOpenDate = accountOpenDate;
+        this.createBy = createBy;
+        this.updateBy = updateBy;
+        this.createDate = createDate;
+        this.updateDate = updateDate;
+    }
 
     @EmbeddedId
     private ProductHoldingsId id;
