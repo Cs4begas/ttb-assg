@@ -4,6 +4,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Component;
 import org.springframework.web.servlet.HandlerInterceptor;
+import ttb.assg.common.ValidationException;
 import ttb.assg.customer.constant.CustomerConstants;
 
 
@@ -16,7 +17,7 @@ public class HeaderInterceptor implements HandlerInterceptor {
         String serviceName = request.getHeader("service-name");
 
         if (contentType == null ||!contentType.equals(CustomerConstants.APPLICATION_JSON_UTF8_VALUE)) {
-            throw new RuntimeException("Invalid Content-Type");
+            throw new ValidationException("Invalid Content-Type");
         }
         return true;
     }

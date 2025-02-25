@@ -16,13 +16,10 @@ import ttb.assg.common.NotFoundException;
 import ttb.assg.customer.constant.CustomerConstants;
 import ttb.assg.customer.constant.IdType;
 import ttb.assg.customer.model.dto.CustomerDTO;
-import ttb.assg.customer.model.entity.CustomerInfo;
 import ttb.assg.utils.JsonFileReader;
 
 import java.io.IOException;
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
