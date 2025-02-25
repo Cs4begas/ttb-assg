@@ -1,5 +1,15 @@
 version: '3.9'
 services:
+  ttb-assignment:
+    build: .
+    ports:
+      - 8080:8080
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/ttb-assg?currentSchema=customer
+      - SPRING_DATASOURCE_USERNAME=ttb-admin
+      - SPRING_DATASOURCE_PASSWORD=ttb-assg
+    depends_on:
+      - postgres
   postgres:
     image: postgres:17.2-alpine
     ports:
